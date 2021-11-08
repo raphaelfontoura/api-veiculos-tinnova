@@ -4,8 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
 import java.time.Instant;
@@ -27,9 +25,9 @@ public class Vehicle {
     @Column(columnDefinition = "text")
     private String descricao;
     private Boolean vendido;
-    @CreatedDate
+    @Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
     private Instant created;
-    @LastModifiedDate
+    @Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
     private Instant updated;
 
     public Vehicle(Long id, String veiculo, String marca, int ano, String descricao, boolean vendido) {
@@ -39,5 +37,23 @@ public class Vehicle {
         this.ano = ano;
         this.descricao = descricao;
         this.vendido = vendido;
+    }
+
+    @PrePersist
+    protected void prePersist() {
+        if (this.vendido == null) {
+            this.vendido = false;
+        }
+        if (this.created == null) {
+            this.created = Instant.now();
+        }
+        if (this.updated == null) {
+            this.updated = Instant.now();
+        }
+    }
+
+    @PreUpdate
+    protected void preUpdate() {
+        this.updated = Instant.now();
     }
 }

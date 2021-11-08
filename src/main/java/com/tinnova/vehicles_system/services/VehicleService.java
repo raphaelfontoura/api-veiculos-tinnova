@@ -4,6 +4,7 @@ import com.tinnova.vehicles_system.dto.VehicleDTO;
 import com.tinnova.vehicles_system.dto.VehicleInputDTO;
 import com.tinnova.vehicles_system.entities.Vehicle;
 import com.tinnova.vehicles_system.repositories.VehicleRepository;
+import com.tinnova.vehicles_system.services.exceptions.ResourceNotFoundException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
@@ -28,8 +29,8 @@ public class VehicleService {
                 .descricao(input.getDescricao())
                 .ano(input.getAno())
                 .vendido(input.getVendido())
-                .created(Instant.now())
-                .updated(Instant.now())
+//                .created(Instant.now())
+//                .updated(Instant.now())
                 .build();
         var savedVehicle = repository.save(vehicle);
         return new VehicleDTO(savedVehicle);
@@ -41,7 +42,8 @@ public class VehicleService {
     }
 
     public VehicleDTO findById(Long id) {
-        Vehicle vehicle = repository.findById(id).orElseThrow();
+        Vehicle vehicle = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Vehicle not found. Id:"+id));
         return new VehicleDTO(vehicle);
     }
 
@@ -58,7 +60,7 @@ public class VehicleService {
             entity = repository.save(update);
             return new VehicleDTO(entity);
         } catch (EntityNotFoundException err) {
-            throw new EntityNotFoundException("Id not found");
+            throw new ResourceNotFoundException("Id not found: " + id);
         }
     }
 
@@ -66,7 +68,7 @@ public class VehicleService {
         try {
             repository.deleteById(id);
         } catch (EmptyResultDataAccessException err) {
-            throw new EntityNotFoundException("Id not found");
+            throw new ResourceNotFoundException("Id not found: " + id);
         }
     }
 

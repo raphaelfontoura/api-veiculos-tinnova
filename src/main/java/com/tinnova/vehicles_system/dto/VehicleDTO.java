@@ -5,10 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 
-import javax.persistence.Column;
 import java.time.Instant;
 
 @Getter @Setter
@@ -36,7 +33,7 @@ public class VehicleDTO {
     }
 
     public Vehicle parseDTOtoEntity() {
-        Vehicle vehicle = Vehicle.builder()
+        return Vehicle.builder()
                 .id(id)
                 .veiculo(veiculo)
                 .marca(marca)
@@ -46,6 +43,5 @@ public class VehicleDTO {
                 .created(created)
                 .updated(updated)
                 .build();
-        return vehicle;
     }
 }

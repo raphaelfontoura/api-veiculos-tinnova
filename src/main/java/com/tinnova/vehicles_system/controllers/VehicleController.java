@@ -3,11 +3,12 @@ package com.tinnova.vehicles_system.controllers;
 import com.tinnova.vehicles_system.dto.VehicleDTO;
 import com.tinnova.vehicles_system.dto.VehicleInputDTO;
 import com.tinnova.vehicles_system.services.VehicleService;
-import org.springframework.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
@@ -15,11 +16,8 @@ import java.util.List;
 @RequestMapping("/veiculos")
 public class VehicleController {
 
+    @Autowired
     private VehicleService service;
-
-    public VehicleController(VehicleService service) {
-        this.service = service;
-    }
 
     @GetMapping
     public ResponseEntity<List<VehicleDTO>> findAll() {
@@ -33,13 +31,19 @@ public class VehicleController {
     }
 
     @PostMapping
-    public ResponseEntity<VehicleDTO> create(@RequestBody VehicleInputDTO input) {
+    public ResponseEntity<VehicleDTO> create(@Valid @RequestBody VehicleInputDTO input) {
         var vehicleDto = service.create(input);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
                 .buildAndExpand(vehicleDto.getId())
                 .toUri();
         return ResponseEntity.created(uri).body(vehicleDto);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<VehicleDTO> update(@PathVariable Long id, @RequestBody VehicleDTO input) {
+        VehicleDTO vehicleDTO = service.update(id, input);
+        return ResponseEntity.ok(vehicleDTO);
     }
 
     @DeleteMapping("/{id}")
