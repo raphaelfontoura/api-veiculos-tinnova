@@ -6,6 +6,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.time.Instant;
 
 @Getter @Setter
@@ -13,10 +17,17 @@ import java.time.Instant;
 @AllArgsConstructor
 public class VehicleDTO {
     private Long id;
+    @NotBlank(message = "Informe o nome do veículo")
     private String veiculo;
+    @NotBlank(message = "Informe a marca do veículo")
     private String marca;
+    @NotNull
+    @Digits(integer = 4, message = "Digite o ano no formato yyyy", fraction = 0)
+    @Min(value = 1900, message = "Digite o ano no formato yyyy")
     private Integer ano;
+    @NotNull(message = "Necessário informar o campo descrição")
     private String descricao;
+    @NotNull(message = "Necessário informar o campo vendido")
     private Boolean vendido;
     private Instant created;
     private Instant updated;

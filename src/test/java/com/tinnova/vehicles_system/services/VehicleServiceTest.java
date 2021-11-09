@@ -39,7 +39,7 @@ public class VehicleServiceTest {
         when(repository.getById(validId)).thenReturn(vehicle);
         doNothing().when(repository).deleteById(validId);
         when(repository.findAll()).thenReturn(List.of(vehicle));
-        when(repository.countNotSell()).thenReturn(1L);
+        when(repository.countNotSell()).thenReturn(1);
     }
 
     @Test
@@ -80,9 +80,9 @@ public class VehicleServiceTest {
 
     @Test
     void getSumOfNotSell_shouldReturnSumOfVehiclesWithSellFalse() {
-        Long expected = 1L;
+        Integer expected = 1;
 
-        Long result = service.getSumOfNotSell();
+        Integer result = service.getSumOfNotSell();
 
         assertEquals(expected, result);
     }

@@ -1,5 +1,7 @@
 package com.tinnova.vehicles_system.controllers;
 
+import com.tinnova.vehicles_system.dto.DecadeDTO;
+import com.tinnova.vehicles_system.dto.QueryDTO;
 import com.tinnova.vehicles_system.dto.VehicleDTO;
 import com.tinnova.vehicles_system.dto.VehicleInputDTO;
 import com.tinnova.vehicles_system.services.VehicleService;
@@ -41,8 +43,14 @@ public class VehicleController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<VehicleDTO> update(@PathVariable Long id, @RequestBody VehicleDTO input) {
+    public ResponseEntity<VehicleDTO> update(@PathVariable Long id, @Valid @RequestBody VehicleDTO input) {
         VehicleDTO vehicleDTO = service.update(id, input);
+        return ResponseEntity.ok(vehicleDTO);
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<VehicleDTO> patchVehicle(@PathVariable Long id, @RequestBody VehicleDTO input) {
+        VehicleDTO vehicleDTO = service.patch(id, input);
         return ResponseEntity.ok(vehicleDTO);
     }
 
@@ -51,4 +59,10 @@ public class VehicleController {
         service.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/find")
+    public ResponseEntity<List<QueryDTO>> query(@RequestParam String q) {
+        return ResponseEntity.ok(service.getDecadeRange(q));
+    }
+
 }
