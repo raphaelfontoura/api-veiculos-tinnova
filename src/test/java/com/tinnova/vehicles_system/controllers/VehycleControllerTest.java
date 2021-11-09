@@ -6,6 +6,7 @@ import com.tinnova.vehicles_system.dto.VehicleInputDTO;
 import com.tinnova.vehicles_system.entities.Vehicle;
 import com.tinnova.vehicles_system.factory.VehicleFactory;
 import com.tinnova.vehicles_system.services.VehicleService;
+import com.tinnova.vehicles_system.services.exceptions.ResourceNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import java.security.InvalidParameterException;
 
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -36,11 +38,15 @@ public class VehycleControllerTest {
 
     private Vehicle vehicle;
     private VehicleDTO vehicleDTO;
+    private Long existId;
+    private Long noExistId;
 
     @BeforeEach
     void setUp() {
         this.vehicle = VehicleFactory.createVehicle();
         this.vehicleDTO = VehicleFactory.createVehicleDTO();
+        this.existId = 1L;
+        this.noExistId = 99L;
     }
 
     @Test
@@ -68,5 +74,24 @@ public class VehycleControllerTest {
                         .content(jsonVehicle))
                 .andExpect(status().isUnprocessableEntity())
                 .andExpect(jsonPath("$.errors").exists());
+    }
+
+    @Test
+    void findById_shouldReturnVehicleDTO_whenIdExist() throws Exception {
+        when(service.findById(existId)).thenReturn(vehicleDTO);
+
+        mockMvc.perform(get("/veiculos/1")
+                    .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath(("$.veiculo")).value(vehicleDTO.getVeiculo()));
+    }
+
+    @Test
+    void findById_shouldReturnResourceNotFound_whenIdNotExist() throws Exception {
+        when(service.findById(noExistId)).thenThrow(ResourceNotFoundException.class);
+
+        mockMvc.perform(get("/veiculos/99")
+                    .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
     }
 }
