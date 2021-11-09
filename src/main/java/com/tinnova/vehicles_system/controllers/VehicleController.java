@@ -12,6 +12,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -62,7 +63,14 @@ public class VehicleController {
 
     @GetMapping("/find")
     public ResponseEntity<List<QueryDTO>> query(@RequestParam String q) {
-        return ResponseEntity.ok(service.getDecadeRange(q));
+        List<QueryDTO> queryDTOS = new ArrayList<>();
+        if (q.equalsIgnoreCase("decada")) {
+            queryDTOS = service.getDecadeRange();
+        }
+        if (q.equalsIgnoreCase("marca")) {
+            queryDTOS = service.getCountByManufacturer();
+        }
+        return ResponseEntity.ok(queryDTOS);
     }
 
 }

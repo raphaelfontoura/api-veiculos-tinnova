@@ -97,23 +97,20 @@ public class VehicleService {
         return repository.countNotSell();
     }
 
-    public List<QueryDTO> getDecadeRange(String q) {
-        List<String> resultQuery = new ArrayList<>();
-        if (q.equalsIgnoreCase("decada")) {
-            resultQuery = repository.countDecada();
-            return resultQuery.stream().map(line -> {
-                QueryDTO dto = new DecadeDTO(line);
-                return dto;
-            }).collect(Collectors.toList());
-        }
-        if (q.equalsIgnoreCase("fabricante")) {
-            resultQuery = repository.countFabricante();
-            return resultQuery.stream().map(line -> {
-                QueryDTO dto = new FabricanteDTO(line);
-                return dto;
-            }).collect(Collectors.toList());
-        }
-        throw new ResourceNotFoundException("Não foi encontrado o critério de pesquisa");
+    public List<QueryDTO> getDecadeRange() {
+        List<String> resultQuery = repository.countDecada();
+        return resultQuery.stream().map(line -> {
+            QueryDTO dto = new DecadeDTO(line);
+            return dto;
+        }).collect(Collectors.toList());
+    }
+
+    public List<QueryDTO> getCountByManufacturer() {
+        List<String> resultQuery = repository.countFabricante();
+        return resultQuery.stream().map(line -> {
+            QueryDTO dto = new FabricanteDTO(line);
+            return dto;
+        }).collect(Collectors.toList());
     }
 
     private void setValues(Vehicle entity, VehicleDTO input) {
@@ -124,4 +121,5 @@ public class VehicleService {
         if (input.getVendido() != null) entity.setVendido(input.getVendido());
         if (input.getAno() != null) entity.setAno(input.getAno());
     }
+
 }

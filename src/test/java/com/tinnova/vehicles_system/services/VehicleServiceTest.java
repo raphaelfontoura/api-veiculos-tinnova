@@ -1,7 +1,6 @@
 package com.tinnova.vehicles_system.services;
 
-import com.tinnova.vehicles_system.dto.VehicleDTO;
-import com.tinnova.vehicles_system.dto.VehicleInputDTO;
+import com.tinnova.vehicles_system.dto.*;
 import com.tinnova.vehicles_system.entities.Vehicle;
 import com.tinnova.vehicles_system.factory.VehicleFactory;
 import com.tinnova.vehicles_system.repositories.VehicleRepository;
@@ -12,6 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -39,7 +39,7 @@ public class VehicleServiceTest {
         when(repository.getById(validId)).thenReturn(vehicle);
         doNothing().when(repository).deleteById(validId);
         when(repository.findAll()).thenReturn(List.of(vehicle));
-        when(repository.countNotSell()).thenReturn(1);
+
     }
 
     @Test
@@ -81,6 +81,7 @@ public class VehicleServiceTest {
     @Test
     void getSumOfNotSell_shouldReturnSumOfVehiclesWithSellFalse() {
         Integer expected = 1;
+        when(repository.countNotSell()).thenReturn(1);
 
         Integer result = service.getSumOfNotSell();
 
@@ -89,12 +90,28 @@ public class VehicleServiceTest {
 
     @Test
     void getSumByDecade_shouldReturnSumOfVehiclesByDecade() {
+        List<String> queryLine = Arrays.asList("2001-2010,2","2011-2020,3");
+        List<QueryDTO> expect = Arrays.asList(
+                new DecadeDTO(queryLine.get(0)), new DecadeDTO(queryLine.get(1)));
+        when(repository.countDecada()).thenReturn(queryLine);
 
+        var result = service.getDecadeRange();
 
+        assertEquals(expect.size(), result.size());
+        assertEquals(expect.get(0).getClass().getName(), result.get(0).getClass().getName());
     }
 
     @Test
     void getSumByManufacturer_shouldReturnSumOfVehiclesByManufacturer() {
+        List<String> queryLine = Arrays.asList("Fiat,2","Chevrolet,3");
+        List<QueryDTO> expect = Arrays.asList(
+                new FabricanteDTO(queryLine.get(0)), new FabricanteDTO(queryLine.get(1)));
+        when(repository.countFabricante()).thenReturn(queryLine);
+
+        var result = service.getCountByManufacturer();
+
+        assertEquals(expect.size(), result.size());
+        assertEquals(expect.get(0).getClass().getName(), result.get(0).getClass().getName());
     }
 
     @Test
