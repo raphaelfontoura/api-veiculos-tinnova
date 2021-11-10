@@ -18,10 +18,8 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.security.InvalidParameterException;
 
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -80,7 +78,7 @@ public class VehycleControllerTest {
     void findById_shouldReturnVehicleDTO_whenIdExist() throws Exception {
         when(service.findById(existId)).thenReturn(vehicleDTO);
 
-        mockMvc.perform(get("/veiculos/1")
+        mockMvc.perform(get("/veiculos/{id}",existId)
                     .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath(("$.veiculo")).value(vehicleDTO.getVeiculo()));
@@ -90,8 +88,26 @@ public class VehycleControllerTest {
     void findById_shouldReturnResourceNotFound_whenIdNotExist() throws Exception {
         when(service.findById(noExistId)).thenThrow(ResourceNotFoundException.class);
 
-        mockMvc.perform(get("/veiculos/99")
+        mockMvc.perform(get("/veiculos/{id}",noExistId)
                     .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void delete_shouldReturnNoContent_whenIdExist() throws Exception {
+        doNothing().when(service).delete(existId);
+
+        mockMvc.perform(delete("/veiculos/{id}",existId)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void delete_shouldReturnResourceNotFoundException_whenIdNoExist() throws Exception {
+        doThrow(ResourceNotFoundException.class).when(service).delete(noExistId);
+
+        mockMvc.perform(delete("/veiculos/{id}",noExistId)
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
 }
